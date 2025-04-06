@@ -4,6 +4,8 @@ import com.daviderdos.person_registry.dto.PersonDTO;
 import com.daviderdos.person_registry.services.PersonService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +37,9 @@ public class PersonController {
     }
 
     @PostMapping
-    public PersonDTO create(@RequestBody PersonDTO dto) {
-        return personService.savePerson(dto);
+    public ResponseEntity<PersonDTO> create(@RequestBody PersonDTO dto) {
+        PersonDTO createdPerson = personService.savePerson(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPerson);
     }
 
     @PutMapping("/{id}")
@@ -44,9 +47,10 @@ public class PersonController {
         dto.id = id;
         return personService.savePerson(dto);
     }
-
+    
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         personService.deletePerson(id);
+        return ResponseEntity.noContent().build();
     }
 }
