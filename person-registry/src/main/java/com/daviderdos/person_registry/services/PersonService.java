@@ -10,32 +10,46 @@ import com.daviderdos.person_registry.repositories.PersonRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PersonService {
     private final PersonRepository personRepository;
+    private static final Logger logger = LoggerFactory.getLogger(PersonService.class);
 
+    @Autowired
     public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
     }
 
     public List<PersonDTO> getAllPersons() {
+        logger.info("Getting all persons");
         return personRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    public Person getPersonById(Long id) {
-        return personRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Person not found."));
+     public PersonDTO getPersonById(Long id) {
+        logger.info("Getting person with id {}", id);
+        Person person = personRepository.findById(id)
+            .orElseThrow(() -> {
+                logger.error("Person not found with id {}", id);
+                return new RuntimeException("Person not found.");
+            });
+        return toDto(person);
     }
 
-    public Person savePerson(Person person) {
-        return personRepository.save(person);
+    public PersonDTO savePerson(PersonDTO dto) {
+        logger.info("Saving person with id {}", dto.id);
+        Person saved = personRepository.save(fromDto(dto));
+        return toDto(saved);
     }
 
     public void deletePerson(Long id) {
+        logger.info("Deleting person with id {}", id);
         personRepository.deleteById(id);
     }
-    
+        
     private PersonDTO toDto(Person person) {
         PersonDTO dto = new PersonDTO();
         dto.id = person.getId();
