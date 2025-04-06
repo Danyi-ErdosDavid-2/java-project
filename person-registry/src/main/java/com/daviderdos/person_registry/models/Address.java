@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "addresses", uniqueConstraints = @UniqueConstraint(columnNames = {"person_id", "type"}))
 @AllArgsConstructor
+@NoArgsConstructor
 public class Address {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
